@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Factaday</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .current-fact {
+            font-size: 24px;
+            padding: 30px;
+            border: 2px solid #333;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 30px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .previous-facts {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 15px;
+            max-height: 400px;
+            overflow-y: scroll;
+        }
+        .previous-facts h3 {
+            margin-top: 0;
+        }
+        .fact-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .fact-item:last-child {
+            border-bottom: none;
+        }
+        .fact-content {
+            margin-bottom: 5px;
+        }
+        .fact-meta {
+            font-size: 12px;
+            color: #666;
+        }
+        .loading {
+            color: #666;
+        }
+        .error {
+            color: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+    <h1>Factaday - One Fact Every Day</h1>
+    <div class="current-fact" id="current">
+        <span class="loading">Loading...</span>
+    </div>
+    
+    <div class="previous-facts">
+        <h3>Previous Facts</h3>
+        <div id="previous-list">
+        </div>
+    </div>
+
+    <script>
+        async function loadData() {
+            try {
+                // Fetch current fact
+                const todayResponse = await fetch('/api/v1/facts/today');
+                if (!todayResponse.ok) throw new Error('Failed to fetch current fact');
+                const todayData = await todayResponse.json();
+                document.getElementById('current').textContent = todayData.content;
+                
+                // Fetch previous facts
+                const previousResponse = await fetch('/api/v1/facts/history');
+                if (!previousResponse.ok) throw new Error('Failed to fetch previous facts');
+                const previousData = await previousResponse.json();
+                
+                // Check if response is array or object with facts property
+                const facts = Array.isArray(previousData) ? previousData : previousData.facts || [];
+                
+                const listHtml = facts
+                    .slice(1)
+                    .map(item => `
+                        <div class="fact-item">
+                            <div class="fact-content">${escapeHtml(item.content)}</div>
+                            <div class="fact-meta">
+                                • ${formatDate(item.created_at)}
+                            </div>
+                        </div>
+                    `)
+                    .join('');
+                document.getElementById('previous-list').innerHTML = listHtml;
+                
+            } catch (error) {
+                console.error('Error loading data:', error);
+                document.getElementById('current').innerHTML = 
+                    '<span class="error">Error loading data</span>';
+                document.getElementById('previous-list').innerHTML = 
+                    '<div class="error">Error loading previous facts</div>';
+            }
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        }
+        
+        loadData();
+    </script>
+</body>
+</html>
