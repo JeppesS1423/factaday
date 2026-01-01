@@ -12,7 +12,6 @@ from .schemas import FactResponse
 
 router = APIRouter(prefix="/api/v1")
 
-
 async def _generate_fact() -> Fact:
     """Generate a random fact using AI"""
     client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
@@ -40,7 +39,6 @@ async def _generate_fact() -> Fact:
         print(f"Error generating fact: {e}")
         raise HTTPException(500, "Failed to generate fact")
 
-
 async def _save_fact(db: Session, fact: Fact) -> None:
     """Save a fact to the database"""
     try:
@@ -52,7 +50,6 @@ async def _save_fact(db: Session, fact: Fact) -> None:
         db.rollback()
         print(f"Error saving fact to database: {e}")
         raise HTTPException(500, "Failed to generate fact, database error")
-
 
 @router.get("/facts/today", response_model=FactResponse)
 async def get_todays_fact(db: Session = Depends(get_db)):
@@ -75,7 +72,6 @@ async def get_todays_fact(db: Session = Depends(get_db)):
         await _save_fact(db, fact)
 
     return fact
-
 
 @router.get("/facts/history", response_model=list[FactResponse])
 def get_fact_history(limit: int = 30, db: Session = Depends(get_db)):

@@ -8,7 +8,6 @@ class FactCreate(BaseModel):
     content: str
     category: FactCategory
 
-
 class FactResponse(BaseModel):
     id: int
     content: str
