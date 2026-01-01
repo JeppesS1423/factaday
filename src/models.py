@@ -11,5 +11,8 @@ class Fact(Base):
     content = Column(String, nullable=False)
     category = Column(String, nullable=False)
     created_at = Column(
-        DateTime, default=datetime.now(timezone.utc), unique=True, index=True
+        DateTime,
+        default=lambda: datetime.now(timezone.utc),
+        unique=True,
+        index=True
     )
