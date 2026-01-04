@@ -3,7 +3,6 @@ from datetime import datetime, timezone
 
 from .database import Base
 
-
 class Fact(Base):
     __tablename__ = "facts"
 
@@ -16,3 +15,9 @@ class Fact(Base):
         unique=True,
         index=True
     )
+
+class AppState(Base):
+    __tablename__ = "app_state"
+    
+    key = Column(String, primary_key=True)
+    value = Column(Integer, nullable=False)

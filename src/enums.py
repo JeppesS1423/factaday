@@ -1,10 +1,8 @@
 from enum import Enum
 
-
 class FactCategory(str, Enum):
     ASTRONOMY = "astronomy"
     HISTORY = "history"
-    BIOLOGY = "biologiy"
     TECHNOLOGY = "technology"
     NATURE = "nature"
     MISCONCEPTION = "misconception"
