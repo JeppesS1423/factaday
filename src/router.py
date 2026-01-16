@@ -100,8 +100,13 @@ async def get_todays_fact(db: Session = Depends(get_db)):
 
     if not fact:
         # Generate a new fact
-        fact = await _generate_fact(db)
-        await _save_fact(db, fact)
+        try:
+            fact = await _generate_fact(db)
+            await _save_fact(db, fact)
+        except Exception as e:
+            print(f"Error generating todays fact: {e}")
+            # Get latest available fact
+            fact = db.query(Fact).order_by(Fact.created_at.desc()).first()
 
     return fact
 
